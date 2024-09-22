@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9001
 spring:
   profiles:
     group:
@@ -9,10 +9,9 @@ spring:
     url: r2dbc:pool:mysql://localhost:3306/webflux
     username: root
     password: ${MYSQL_PASSWORD}
-    #initialization-mode: always
   data:
     mongodb:
-        uri: ${MONGO_URL}
+      uri: ${MONGO_URL}
 
 ---
 
@@ -21,7 +20,7 @@ spring:
     activate:
       on-profile: "localDB"
   application:
-    name: game-service
+    name: dis-game-service
 
 eureka:
   client:
@@ -40,3 +39,21 @@ spring:
   config:
     activate:
       on-profile: "prodDB"
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "localDB-9002"
+server:
+  port: 9002
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "localDB-9003"
+server:
+  port: 9003

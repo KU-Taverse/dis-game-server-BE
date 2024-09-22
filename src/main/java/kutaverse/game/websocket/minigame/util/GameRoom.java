@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 /*
-* 게임 방을 관리
-* 해당 방에는 player들을 저장(해당 유저의 아이디, 접속한 websocket session)
-* */
+ * 게임 방을 관리
+ * 해당 방에는 player들을 저장(해당 유저의 아이디, 접속한 websocket session)
+ * */
 @Getter
 public class GameRoom {
     private final String roomId;

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kutaverse.game.minigame.dto.MiniGameRequest;
 import kutaverse.game.minigame.dto.MiniGameRequestType;
 import kutaverse.game.websocket.minigame.util.GameRoomManager;
-import kutaverse.game.websocket.minigame.util.MatchingQueue;
+import kutaverse.game.websocket.minigame.util.WaitingRoom;
+import kutaverse.game.websocket.minigame.util.WaitingUser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -14,8 +16,11 @@ import reactor.core.publisher.Mono;
 
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class MiniGameWebsocketHandler implements org.springframework.web.reactive.socket.WebSocketHandler {
+    private final WaitingRoom waitingRoom;
+
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -48,7 +53,7 @@ public class MiniGameWebsocketHandler implements org.springframework.web.reactiv
 
     private Mono<Void> handleMiniGameRequest(MiniGameRequest miniGameRequest,WebSocketSession session) throws JsonProcessingException {
         if (miniGameRequest.getMiniGameRequestType() == MiniGameRequestType.WAIT) {
-            MatchingQueue.addPlayer(miniGameRequest.getUserId(), session);
+            waitingRoom.addUser(miniGameRequest.getUserId(), session);
         } else if (miniGameRequest.getMiniGameRequestType() == MiniGameRequestType.RUNNING) {
             GameRoomManager.updateGameRoom(miniGameRequest.getRoomId(), miniGameRequest);
             GameRoomManager.sendPlayerData(miniGameRequest.getRoomId(), miniGameRequest.getUserId(), miniGameRequest);

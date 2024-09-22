@@ -1,12 +1,9 @@
 package kutaverse.game.websocket;
 
-import kutaverse.game.chat.repository.ChatRepository;
-import kutaverse.game.chat.service.ChatService;
-import kutaverse.game.websocket.chat.ChatWebSocketHandler;
-import kutaverse.game.websocket.map.MapWebSocketHandler;
+
 import kutaverse.game.websocket.minigame.MiniGameWebsocketHandler;
-import kutaverse.game.websocket.taggame.TagGameWebSocketHandler;
-import kutaverse.game.websocket.taggame.handler.CustomHandlerMapping;
+import kutaverse.game.websocket.minigame.dto.GameResultDTO;
+import kutaverse.game.websocket.minigame.util.WaitingRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,44 +16,18 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor
 public class WebsocketConfig {
-
-	private final CustomHandlerMapping customHandlerMapping;
-
-	@Bean
-	public MapWebSocketHandler mapWebSocketHandler(Sinks.Many<String> sink) {
-		return new MapWebSocketHandler(sink);
-	}
+	private final WaitingRoom waitingRoom;
 
 	@Bean
 	public MiniGameWebsocketHandler miniGameWebsocketHandler() {
-		return new MiniGameWebsocketHandler();
+		return new MiniGameWebsocketHandler(waitingRoom);
 	}
 
-	@Bean
-	public ChatWebSocketHandler chatWebSocketHandler(ChatService chatService) {
-		return new ChatWebSocketHandler(chatService);
-	}
 
 	@Bean
-	public TagGameWebSocketHandler tagGameWebSocketHandler() {
-		return new TagGameWebSocketHandler(customHandlerMapping);
-	}
-
-	@Bean
-	public ChatService chatService(ChatRepository chatRepository) {
-		return new ChatService(chatRepository);
-	}
-
-	@Bean
-	public SimpleUrlHandlerMapping handlerMapping(MapWebSocketHandler mapWsh,
-												  MiniGameWebsocketHandler miniWsh,
-												  ChatWebSocketHandler chatWsh,
-												  TagGameWebSocketHandler tagGameWsh) {
+	public SimpleUrlHandlerMapping handlerMapping(MiniGameWebsocketHandler miniWsh) {
 		return new SimpleUrlHandlerMapping(Map.of(
-				"/map", mapWsh,
-				"/game", miniWsh,
-				"/chat", chatWsh,
-				"/taggame", tagGameWsh
+				"/game", miniWsh
 		), 1);
 	}
 
