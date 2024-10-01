@@ -1,5 +1,3 @@
-server:
-  port: 9001
 spring:
   profiles:
     group:
@@ -20,7 +18,39 @@ spring:
     activate:
       on-profile: "localDB"
   application:
-    name: dis-game-service
+    name: dis-game-service-1
+server:
+  port: 9001
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: localhost
+    instance-id: ${spring.application.name}:${server.port}
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "prodDB"
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "localDB-9002"
+  application:
+    name: dis-game-service-2
+server:
+  port: 9002
 
 eureka:
   client:
@@ -38,22 +68,19 @@ eureka:
 spring:
   config:
     activate:
-      on-profile: "prodDB"
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "localDB-9002"
-server:
-  port: 9002
-
----
-
-spring:
-  config:
-    activate:
       on-profile: "localDB-9003"
+  application:
+    name: dis-game-service-3
 server:
   port: 9003
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: localhost
+    instance-id: ${spring.application.name}:${server.port}
