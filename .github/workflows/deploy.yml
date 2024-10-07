@@ -72,8 +72,6 @@ jobs:
       # 실행 시, docker-compose를 사용합니다.
       - name: Deploy to server
         uses: appleboy/ssh-action@master
-        env:
-          COMPOSE: ${{ secrets.DOCKER_PATH }}
         id: deploy
         with:
           host: ${{ secrets.HOST }}
