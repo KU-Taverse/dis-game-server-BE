@@ -1,8 +1,4 @@
 spring:
-  profiles:
-    group:
-      "local": "localDB"
-      "prod": "prodDB"
   r2dbc:
     url: r2dbc:pool:mysql://localhost:3306/webflux
     username: root
@@ -11,12 +7,28 @@ spring:
     mongodb:
       uri: ${MONGO_URL}
 
+  config:
+    activate:
+      on-profile: "default"
+  application:
+    name: dis-game-service
+  cloud:
+    config:
+      enabled: false  # 로컬 환경에서 Config 서버 비활성화
+server:
+  port: 9005
+
+eureka:
+  client:
+    enabled: false  # 로컬 환경에서 Eureka 클라이언트 비활성화
+
+
 ---
 
 spring:
   config:
     activate:
-      on-profile: "localDB"
+      on-profile: "localDB-9001"
   application:
     name: dis-game-service-1
 server:
@@ -33,13 +45,6 @@ eureka:
     ip-address: localhost
     instance-id: ${spring.application.name}:${server.port}
 
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "prodDB"
 
 ---
 
