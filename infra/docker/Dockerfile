@@ -9,4 +9,4 @@ COPY ${JAR_FILE} app.jar
 ENV ACTIVE=prod
 
 # 동적으로 profiles을 전달하기 위해 entrypoint 수정
-ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.profiles.active=${ACTIVE}"]
+ENTRYPOINT ["java", "-jar", "/app.jar", "--spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
