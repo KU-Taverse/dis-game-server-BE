@@ -82,20 +82,31 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: GITHUB_SHA
           script: |
+            # 로그인 후 기존 컨테이너 정리
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            echo ${{secrets.PROJECT_PATH}}
-            cd ${{secrets.PROJECT_PATH}}
-            cd ..
-            cd ..
-            git pull origin main
-            cd ${{secrets.PROJECT_PATH}}
-            sudo docker-compose stop
             
-            sudo docker rm $(sudo docker ps -a -q)
-            sudo docker rmi $(sudo docker images -q )
+            sudo docker stop dis-game-service-1 || true
+            sudo docker stop dis-game-service-2 || true
+            sudo docker stop dis-game-service-3 || true
+            sudo docker rm dis-game-service-1 || true
+            sudo docker rm dis-game-service-2 || true
+            sudo docker rm dis-game-service-3 || true
+
+            # 새로 푸시된 이미지 pull
             sudo docker pull ${{ secrets.DOCKER_REPO }}
-            
-            sudo docker-compose up --build -d
+
+            # 각 프로필에 맞춰 컨테이너 실행 (prod, localDB-9002, localDB-9003)
+            sudo docker run -d --name dis-game-service-1 -p 9001:9001 \
+              -e SPRING_PROFILES_ACTIVE=localDB-9001 \
+              ${{ secrets.DOCKER_REPO }}
+
+            sudo docker run -d --name dis-game-service-2 -p 9002:9002 \
+              -e SPRING_PROFILES_ACTIVE=localDB-9002 \
+              ${{ secrets.DOCKER_REPO }}
+
+            sudo docker run -d --name dis-game-service-3 -p 9003:9003 \
+              -e SPRING_PROFILES_ACTIVE=localDB-9003 \
+              ${{ secrets.DOCKER_REPO }}
 
       - name: Notify
         uses: actions/github-script@v5
