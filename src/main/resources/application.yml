@@ -1,8 +1,4 @@
 spring:
-  profiles:
-    group:
-      "local": "localDB"
-      "prod": "prodDB"
   r2dbc:
     url: r2dbc:pool:mysql://localhost:3306/webflux
     username: root
@@ -16,7 +12,7 @@ spring:
 spring:
   config:
     activate:
-      on-profile: "localDB"
+      on-profile: "localDB-9001"
   application:
     name: dis-game-service-1
 server:
@@ -33,13 +29,6 @@ eureka:
     ip-address: localhost
     instance-id: ${spring.application.name}:${server.port}
 
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: "prodDB"
 
 ---
 
