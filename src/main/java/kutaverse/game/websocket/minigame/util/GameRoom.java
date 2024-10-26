@@ -141,8 +141,10 @@ public class GameRoom {
         //
         String jsonMessage = objectMapper.writeValueAsString(miniGameRequest);
 
-        players.values().forEach(session -> {
-            session.send(Mono.just(session.textMessage(jsonMessage))).subscribe();
+        players.forEach((userId, session) -> {
+            if (!userId.equals(miniGameRequest.getUserId())) {  // 요청 유저가 아닌 경우에만 전송
+                session.send(Mono.just(session.textMessage(jsonMessage))).subscribe();
+            }
         });
 
         // 게임 데이터를 저장합니다.
