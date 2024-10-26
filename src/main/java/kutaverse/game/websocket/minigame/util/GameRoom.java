@@ -114,6 +114,7 @@ public class GameRoom {
     public void endGameAndNotifyPlayers(MiniGameRequest miniGameRequest) throws JsonProcessingException {
         // 어떤 형식으로 데이터를 보낼 것인가?
         // 유저1, 유저2, 점수1, 점수2, 누구 승
+        ObjectMapper objectMapper = new ObjectMapper();
 
         GameResultDTO gameResultDTO = new GameResultDTO();
 
@@ -138,8 +139,10 @@ public class GameRoom {
 //        });
 
         //
+        String jsonMessage = objectMapper.writeValueAsString(miniGameRequest);
+
         players.values().forEach(session -> {
-            session.send(Mono.just(session.textMessage(String.valueOf(miniGameRequest)))).subscribe();
+            session.send(Mono.just(session.textMessage(jsonMessage))).subscribe();
         });
 
         // 게임 데이터를 저장합니다.
