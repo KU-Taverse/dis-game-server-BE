@@ -6,6 +6,7 @@ import kutaverse.game.minigame.dto.MiniGameRequest;
 import kutaverse.game.minigame.service.MiniGameService;
 import kutaverse.game.websocket.minigame.dto.GameResultDTO;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 해당 방에는 player들을 저장(해당 유저의 아이디, 접속한 websocket session)
  * */
 @Getter
+@Slf4j
 public class GameRoom {
     private final String roomId;
 
@@ -146,6 +148,19 @@ public class GameRoom {
                 session.send(Mono.just(session.textMessage(jsonMessage))).subscribe();
             }
         });
+
+        if(firstEntry.getValue().isOpen() && secondEntry.getValue().isOpen()){
+            // 비동기적으로 세션을 닫음
+            firstEntry.getValue().close()
+                    .doOnSuccess(aVoid -> log.info("Player 1 세션이 성공적으로 닫혔습니다."))
+                    .doOnError(e -> log.error("Player 1 세션 닫기 실패", e))
+                    .subscribe();
+
+            secondEntry.getValue().close()
+                    .doOnSuccess(aVoid -> log.info("Player 2 세션이 성공적으로 닫혔습니다."))
+                    .doOnError(e -> log.error("Player 2 세션 닫기 실패", e))
+                    .subscribe();
+        }
 
         // 게임 데이터를 저장합니다.
         saveGameData(gameResultDTO);
