@@ -133,8 +133,13 @@ public class GameRoom {
         String gameDataJson = objectMapper.writeValueAsString(gameResultDTO);
 
         // 각 유저에게 게임 종료 알림을 보낸다.
+//        players.values().forEach(session -> {
+//            session.send(Mono.just(session.textMessage("게임이 종료되었습니다. " + gameDataJson))).subscribe();
+//        });
+
+        //
         players.values().forEach(session -> {
-            session.send(Mono.just(session.textMessage("게임이 종료되었습니다. " + gameDataJson))).subscribe();
+            session.send(Mono.just(session.textMessage(String.valueOf(miniGameRequest)))).subscribe();
         });
 
         // 게임 데이터를 저장합니다.
